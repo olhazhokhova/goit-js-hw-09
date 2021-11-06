@@ -38,22 +38,7 @@ window.addEventListener('DOMContentLoaded', () => {
 refs.buttonStart.addEventListener('click', () => {
   refs.buttonStart.disabled = true;
   refs.inputDate.disabled = true;
-
-  const dataNow = Date.now();
-  let convertedDate = selectedDate - dataNow;
-
-  const timer = setInterval(function () {
-    refs.days.textContent = addLeadingZero(convertMs(convertedDate).days);
-    refs.hours.textContent = addLeadingZero(convertMs(convertedDate).hours);
-    refs.minutes.textContent = addLeadingZero(convertMs(convertedDate).minutes);
-    refs.seconds.textContent = addLeadingZero(convertMs(convertedDate).seconds);
-    convertedDate -= 1000;
-
-    if (convertedDate < 0) {
-      clearInterval(timer);
-      refs.inputDate.disabled = false;
-    }
-  }, 1000);
+  onStartTimer();
 });
 
 function convertMs(ms) {
@@ -68,6 +53,26 @@ function convertMs(ms) {
   const seconds = Math.floor((((ms % day) % hour) % minute) / second);
 
   return { days, hours, minutes, seconds };
+}
+
+function onStartTimer() {
+  const timer = setInterval(() => {
+    const currentDate = Date.now();
+    const deltaDate = selectedDate - currentDate;
+    const time = convertMs(deltaDate);
+    if (deltaDate < 1000) {
+      clearInterval(timer);
+      refs.inputDate.disabled = false;
+    }
+    updateTime(time);
+  }, 1000);
+}
+
+function updateTime({ days, hours, minutes, seconds }) {
+  refs.days.textContent = addLeadingZero(days);
+  refs.hours.textContent = addLeadingZero(hours);
+  refs.minutes.textContent = addLeadingZero(minutes);
+  refs.seconds.textContent = addLeadingZero(seconds);
 }
 
 function addLeadingZero(value) {
